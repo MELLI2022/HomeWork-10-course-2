@@ -2,60 +2,53 @@ package skypro.homework10course2.Service;
 
 import org.springframework.stereotype.Service;
 import skypro.homework10course2.Domane.Employee;
+import skypro.homework10course2.Exception.EmployeeAlreadyAddedException;
+import skypro.homework10course2.Exception.EmployeeNotFoundException;
+import skypro.homework10course2.Exception.EmployeeStorageIsFullException;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 @Service
 public class EmployeeService {
-    public static final Employee[] employees = new Employee[10];
+    private static final int SIZE = 3;
+    private final List<Employee> employees = new ArrayList<>(SIZE);
 
 
-    EmployeeService() {
-        employees[0] = new Employee("Михаил", "Викторович", 1, 6000);
-        employees[1] = new Employee("Антонина", "Викторовна", 2, 3000);
-        employees[2] = new Employee("Дмитрий", "Викторович", 2, 2000);
-        employees[3] = new Employee("Людмила", "Викторовна", 3, 1000);
-        employees[4] = new Employee("Анатолий", "Викторович", 4, 4000);
-        employees[5] = new Employee("Лилия", "Викторовна", 5, 1500);
-        employees[6] = new Employee("Анна", "Викторовна", 3, 2500);
-        employees[7] = new Employee("Татьяна", "Викторовна", 4, 3500);
-        employees[8] = new Employee("Елена", "Викторовна", 1, 4500);
-        employees[9] = new Employee("Николай", "Викторович", 2, 5500);
-
+    public Employee add(String firstName, String lastName) {
+        Employee employee = new Employee(ValidatorService.validateFirstName(firstName),
+                ValidatorService.validateLastName(lastName));
+        if (employees.size() < SIZE) {
+            for (Employee emp : employees) {
+                if (emp.equals(employees)) {
+                    throw new EmployeeAlreadyAddedException();
+                }
+            }
+            employees.add(employee);
+            return employee;
+        }
+        throw new EmployeeStorageIsFullException();
     }
 
-    public Employee getMaxWage(int department) {
-        return Arrays.stream(employees)
-                .filter(Objects::nonNull)
-                .filter(e -> e.getDepartment() == department )
-                .max(Comparator.comparingInt(Employee::getWage))
-                .orElseThrow();
+    public Employee find (String firstName, String lastName){
+        Employee employee = new Employee(firstName, lastName);
+        if (employees.contains(employee)) {
+            return employee;
+        }
+
+        throw new EmployeeNotFoundException();
+    }
+    public Employee remove (String firstName, String lastName){
+        Employee employee = new Employee(firstName, lastName);
+        if (employees.remove(employee)) {
+            return employee;
+        }
+
+        throw new EmployeeNotFoundException();
+    }
+    public List<Employee> list (){
+        return employees;
     }
 
-
-    public static Employee getMinWage(Integer department) {
-        return Arrays.stream(employees)
-                .filter(Objects::nonNull)
-                .filter(e -> e.getDepartment() == department )
-                .min(Comparator.comparingInt(Employee::getWage))
-                .orElseThrow();
-    }
-    public List<Employee> getAllInDepart(){
-        return Arrays.stream(employees)
-                .sorted(Comparator.comparingInt(Employee::getDepartment))
-                .collect(Collectors.toList());
-
-    }
-
-    public List<Employee> getAllByDepart(int id){
-        return Arrays.stream(employees)
-                .filter(Objects::nonNull)
-                .filter(e -> e.getDepartment() == id )
-                .collect(Collectors.toList());
-    }
 }
 
 

@@ -9,30 +9,33 @@ import skypro.homework10course2.Service.EmployeeService;
 
 import java.util.List;
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/employee")
 public class EmployeeController {
-    private final EmployeeService service;
 
-    public EmployeeController(EmployeeService service) {
-        this.service = service;
+    private final EmployeeService employeeService;
+
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
+    @GetMapping("/add")
+    public Employee add(@RequestParam  String firstName,
+                        @RequestParam  String lastName){
+        return employeeService.add(firstName, lastName);
+    }
+    @GetMapping("/find")
+    public Employee find(@RequestParam  String firstName,
+                         @RequestParam  String lastName){
+        return employeeService.find(firstName, lastName);
+    }
+    @GetMapping("/remove")
+    public Employee remove(@RequestParam  String firstName,
+                           @RequestParam  String lastName){
+        return employeeService.remove(firstName, lastName);
+    }
+    @GetMapping()
+    public List<Employee> list (){
+        return employeeService.list();
     }
 
-    @GetMapping("/max-wage")
-    public Employee getMaxWage(@RequestParam("departmentId") Integer id){
-        return service.getMaxWage(id);
-    }
-    @GetMapping("/min-wage")
-    public Employee getMinWage(@RequestParam ("departmentId") Integer id){
-        return EmployeeService.getMinWage(id);
-    }
-    @GetMapping("/all")
-    public List<Employee> getAllInDepart(){
-        return service.getAllInDepart();
-    }
-
-    @GetMapping("/departments/all")
-    public List<Employee> getAllByDepart(@RequestParam ("departmentId")Integer id) {
-        return service.getAllByDepart(id);
-    }
 
 }
